@@ -6,7 +6,7 @@ without configuring a full Chef install.
 It defaults to using an OSM extract of London, UK, but you can change this if
 you like, in the Dockerfile.
 
-Run `fetch-repos.sh` to pull down each Valhall component into it's own
+Run `fetch-repos.sh` to pull down each Valhalla component into its own
 subdirectory. You can run this again any time to pull master and any
 submodules.
 
