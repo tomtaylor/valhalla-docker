@@ -58,6 +58,9 @@ RUN cd baldr && ./autogen.sh && ./configure CPPFLAGS=-DBOOST_SPIRIT_THREADSAFE &
 ADD sif sif
 RUN cd sif && ./autogen.sh && ./configure CPPFLAGS=-DBOOST_SPIRIT_THREADSAFE && make -j4 && make install && cd ..
 
+ADD skadi skadi
+RUN cd skadi && ./autogen.sh && ./configure CPPFLAGS=-DBOOST_SPIRIT_THREADSAFE && make -j4 && make install && cd ..
+
 ADD mjolnir mjolnir
 RUN cd mjolnir && ./autogen.sh && ./configure CPPFLAGS=-DBOOST_SPIRIT_THREADSAFE && make -j4 && make install && cd ..
 
@@ -75,10 +78,13 @@ RUN cd tyr && ./autogen.sh && ./configure CPPFLAGS=-DBOOST_SPIRIT_THREADSAFE && 
 
 RUN ldconfig
 
-RUN mkdir /data
 # Change this OSM extract to somewhere else if you like.
-RUN wget http://download.geofabrik.de/europe/great-britain/england/greater-london-latest.osm.pbf
-RUN cd mjolnir && pbfgraphbuilder -c conf/valhalla.json ../greater-london-latest.osm.pbf && cd ..
+RUN wget https://s3.amazonaws.com/metro-extracts.mapzen.com/london_england.osm.pbf
+
+RUN mkdir -p /data/valhalla
+ADD conf conf
+RUN pbfadminbuilder -c conf/valhalla.json *.pbf
+RUN pbfgraphbuilder -c conf/valhalla.json *.pbf
 
 RUN mkdir /etc/service/tyr
 ADD tyr.sh /etc/service/tyr/run
