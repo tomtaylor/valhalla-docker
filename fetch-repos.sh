@@ -1,5 +1,5 @@
 #!/bin/sh
-for repo in midgard baldr sif skadi mjolnir loki odin thor tyr; do
+for repo in midgard baldr sif skadi mjolnir loki odin thor tyr conf; do
   echo "Fetching $repo..."
   if [ ! -d $repo ]
   then
