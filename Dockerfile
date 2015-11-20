@@ -3,13 +3,14 @@ FROM phusion/baseimage:0.9.17
 CMD ["/sbin/my_init"]
 EXPOSE 8002
 
-RUN apt-get update && apt-get install -y \
+RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+  apt-get update && apt-get install -y \
   autoconf \
   automake \
   libtool \
   make \
-  gcc-4.8 \
-  g++-4.8 \
+  gcc-4.9 \
+  g++-4.9 \
   libboost1.54-dev \
   libboost-program-options1.54-dev \
   libboost-filesystem1.54-dev \
@@ -27,8 +28,8 @@ RUN apt-get update && apt-get install -y \
   libcurl4-openssl-dev \
   wget
 
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90 && \
-  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90 && \
+  update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
 
 RUN mkdir /valhalla
 WORKDIR /valhalla
@@ -53,7 +54,13 @@ ADD midgard midgard
 RUN cd midgard && ./autogen.sh && ./configure CPPFLAGS=-DBOOST_SPIRIT_THREADSAFE && make -j4 && make install && cd ..
 
 ADD baldr baldr
-RUN cd baldr && ./autogen.sh && ./configure CPPFLAGS=-DBOOST_SPIRIT_THREADSAFE && make -j4 && make install && cd ..
+RUN cd baldr && \
+  ./autogen.sh && \
+  ./configure CPPFLAGS=-DBOOST_SPIRIT_THREADSAFE && \
+  make valhalla/baldr/date_time_zonespec.h && \
+  make -j4 && \
+  make install \
+  && cd ..
 
 ADD sif sif
 RUN cd sif && ./autogen.sh && ./configure CPPFLAGS=-DBOOST_SPIRIT_THREADSAFE && make -j4 && make install && cd ..
@@ -90,3 +97,4 @@ RUN mkdir /etc/service/tyr
 ADD tyr.sh /etc/service/tyr/run
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
